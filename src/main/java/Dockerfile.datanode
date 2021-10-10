@@ -1,0 +1,5 @@
+FROM openjdk:16
+COPY . /opt/hdfsProject
+WORKDIR /opt/hdfsProject
+CMD chmod +x runNameNode.sh
+CMD sh runDataNode.sh

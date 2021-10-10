@@ -24,7 +24,7 @@ public class DataNode extends UnicastRemoteObject implements IDataNodeInterface 
                     .parseFrom(inp);
             HDFS.BlockLocations blockLocations = writeBlockRequest.getBlockInfo();
             byte[] data = ByteString.copyFrom(writeBlockRequest.getDataList()).toByteArray();
-            String path = "/home/ishani/IdeaProjects/hdfs/src/main/resources/written.txt";
+            String path = "/opt/" + blockLocations.getBlockNumber();
             HDFS.WriteBlockResponse writeBlockResponse = HDFS.WriteBlockResponse
                     .newBuilder()
                     .setStatus(200)

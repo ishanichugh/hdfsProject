@@ -9,9 +9,11 @@ import java.util.HashMap;
 
 public class NameNode extends UnicastRemoteObject implements INameNodeInterface {
     private int totalFiles;
+    private int blockNumber;
     private HashMap<String, ArrayList<Integer>> filesStored;
     protected NameNode() throws RemoteException {
         super();
+        blockNumber = 1;
         totalFiles = 0;
     }
 
@@ -21,7 +23,6 @@ public class NameNode extends UnicastRemoteObject implements INameNodeInterface 
                 .parseFrom(inp);
         String fileName = openFileRequest.getFileName();
         int handle = totalFiles+1;
-        filesStored.put(fileName, null);
         boolean read = openFileRequest.getForRead();
         HDFS.OpenFileResponse openFileResponse = HDFS.OpenFileResponse
                 .newBuilder()
@@ -56,26 +57,6 @@ public class NameNode extends UnicastRemoteObject implements INameNodeInterface 
 
     @Override
     public byte[] assignBlock(byte[] inp) throws RemoteException {
-        return new byte[0];
-    }
-
-    @Override
-    public byte[] list(byte[] inp) throws RemoteException {
-        try {
-            HDFS.ListFilesRequest listFilesRequest = HDFS.ListFilesRequest
-                    .parseFrom(inp);
-            HDFS.ListFilesResponse listFilesResponse = HDFS.ListFilesResponse
-                    .newBuilder()
-                    .setStatus(200)
-                    .build();
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        return new byte[0];
-    }
-
-    @Override
-    public byte[] blockReport(byte[] inp) throws RemoteException {
         try {
             HDFS.AssignBlockRequest assignBlockRequest = HDFS.AssignBlockRequest
                     .parseFrom(inp);
@@ -93,7 +74,7 @@ public class NameNode extends UnicastRemoteObject implements INameNodeInterface 
                     .newBuilder()
                     .setStatus(200)
                     .setNewBlock(HDFS.BlockLocations.newBuilder()
-                            .setBlockNumber(1)
+                            .setBlockNumber(blockNumber++)
                             .addAllLocations(dataNodeLocations)
                             .build())
                     .build();
@@ -101,6 +82,28 @@ public class NameNode extends UnicastRemoteObject implements INameNodeInterface 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] list(byte[] inp) throws RemoteException {
+        try {
+            HDFS.ListFilesRequest listFilesRequest = HDFS.ListFilesRequest
+                    .parseFrom(inp);
+            HDFS.ListFilesResponse listFilesResponse = HDFS.ListFilesResponse
+                    .newBuilder()
+                    .setStatus(200)
+                    .addFileNames("buddu")
+                    .build();
+            return listFilesResponse.toByteArray();
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] blockReport(byte[] inp) throws RemoteException {
         return new byte[0];
     }
 

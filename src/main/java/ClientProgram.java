@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ClientProgram {
-    private static int blockSize = 4000;
+    private static int blockSize = 8800;
     private static INameNodeInterface nameNode;
     private static int handle;
 
@@ -68,9 +68,13 @@ public class ClientProgram {
                             System.out.println("Not written in Data Node");
                             return false;
                         }
+                        else {
+                            System.out.println("Block written Successfully");
+                        }
                     }
                     bb.clear();
                 } else {
+                    System.out.println("couldn't find");
                     break;
                 }
             }
@@ -103,7 +107,6 @@ public class ClientProgram {
     }
 
     static void list() {
-        System.out.println("Here's the list of all the files:\n");
         HDFS.ListFilesRequest listFilesRequest = HDFS.ListFilesRequest
                 .newBuilder()
                 .build();
@@ -115,7 +118,9 @@ public class ClientProgram {
                 System.out.println("Couldn't get the list");
                 return;
             }
-            // deserialize the returned byte array
+            System.out.println("Here's the list of all the files:\n");
+            String output = listFilesResponse.getFileNames(0);
+            System.out.println(output);
         } catch (RemoteException | InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -127,6 +132,6 @@ public class ClientProgram {
         nameNode = (INameNodeInterface) registry.lookup("nameNode");
         String filePath = "/home/ishani/IdeaProjects/hdfs/src/main/resources/input.txt";
         put(filePath);
-        list();
+//        list();
     }
 }
